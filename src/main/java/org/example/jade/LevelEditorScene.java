@@ -1,5 +1,8 @@
 package org.example.jade;
 
+import org.example.renderer.Shader;
+import org.example.renderer.Texture;
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 
 import java.awt.event.KeyEvent;
@@ -7,6 +10,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
@@ -16,6 +20,8 @@ public class LevelEditorScene extends Scene {
     private int vertexID;
     private int fragmentID;
     private int shaderProgram;
+
+    private Texture testTexture;
 
     private String fragmentShaderSrc = "#version 330 core\n" +
             "\n" +
@@ -40,36 +46,53 @@ public class LevelEditorScene extends Scene {
             "    gl_Position = vec4(aPos, 1.0);\n" +
             "}";
 
-
     private float[] vertexArray = {
-        // position           //color
-        0.5f, -0.5f, 0.0f,    1.0f, 0.0f, 0.0f, 1.0f,    // Bottom right    0
-        -0.5f, 0.5f, 0.0f,    0.0f, 1.0f, 0.0f, 1.0f,    // Top left        1
-        0.5f, 0.5f, 0.0f,     0.0f, 0.0f, 1.0f, 1.0f,    // Top right       2
-        -0.5f, -0.5f, 0.0f,   1.0f, 1.0f, 0.0f, 1.0f,    // Bottom left     3
+            // position           //color                      //uv coordinates
+            100.0f, 100.0f, 0.0f,    1.0f, 0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // top right    0
+            100.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f, 1.0f,   1.0f, 0.0f, // bottom right        1
+            0.0f, 0.0f, 0.0f,     0.0f, 0.0f, 1.0f, 1.0f,   0.0f, 0.0f, // bottom left       2
+            0.0f, 100.0f, 0.0f,   1.0f, 1.0f, 0.0f, 1.0f,   0.0f, 1.0f, // top left     3
     };
 
     // IMPORTANT: Must be in counter-clockwise order
+//    private int[] elementArray = {
+//        0, 2, 1,  // Top right triangle
+//        2, 0, 3   // bottom left triangle
+//    };
+
     private int[] elementArray = {
-        2, 1, 0,  // Top right triangle
-        0, 1, 3   // bottom left triangle
+            2, 3, 0,  // Top right triangle
+            0, 1, 2   // bottom left triangle
     };
 
     private int vaoID;
     private int vboID;
     private int eboID;
 
+    private Shader defaultShader;
+
 
     public LevelEditorScene() {
-        System.out.println("Inside " + this.getClass().getName());
+//        System.out.println("Inside " + this.getClass().getName());
+
+
     }
 
     @Override
-    public void update(float dt) {
-        showFps(dt);
+    public void update(double dt) {
+//        showFps(dt);
+        //camera.updatePosition((float)dt * -50.f, (float)dt * -50.f);
 
         // Bind shader program
-        glUseProgram(shaderProgram);
+        defaultShader.use();
+
+        defaultShader.uploadTexture("TEX_SAMPLER", 0);
+        glActiveTexture(GL_TEXTURE0);
+        testTexture.bind();
+
+        defaultShader.uploadMat4f("uProjection", camera.getProjectionMatrix());
+        defaultShader.uploadMat4f("uView", camera.getViewMatrix());
+        defaultShader.uploadFloat("uTime", (float) glfwGetTime());
 
         // Bind the VAO that we're using
         glBindVertexArray(vaoID);
@@ -85,74 +108,23 @@ public class LevelEditorScene extends Scene {
         glDisableVertexAttribArray(1);
 
         glBindVertexArray(0);
-        glUseProgram(0);
+
+        defaultShader.detach();
 
     }
 
     @Override
     public void init() {
-        // Compile and link shaders
-        compileShaders();
-        compileFragment();
-        linkShaders();
+        this.camera = new Camera(new Vector2f(0.0f, 0.0f));
+        this.defaultShader = new Shader("assets/shaders/default.glsl");
+//        this.testTexture = new Texture("assets/images/mario_sprite.png");
+        this.testTexture = new Texture("assets/images/mario_test.png");
+//        this.testTexture = new Texture("assets/images/megaman_sprite.png");
+        testTexture.bind();
+
         generateBufferObjectsAndSendToGPU();
-    }
 
-    //TODO - refactor to another class
-    private void compileShaders() {
 
-        //First load and compile the vertex shader
-        vertexID = glCreateShader(GL_VERTEX_SHADER);
-
-        //Pass the shader source to the GPU
-        glShaderSource(vertexID, vertexShaderSrc);
-        glCompileShader(vertexID);
-
-        // Check for errors in compilation
-        int success = glGetShaderi(vertexID, GL_COMPILE_STATUS);
-
-        if (success == GL_FALSE) {
-            int len = glGetShaderi(vertexID, GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: 'defaultShader.glsl'\n\tVertex shader compilation failed.");
-            System.out.println(glGetShaderInfoLog(vertexID, len));
-            assert false: "";
-        }
-    }
-
-    private void compileFragment() {
-        // First load and compile the vertex shader
-        fragmentID = glCreateShader(GL_FRAGMENT_SHADER);
-        // Pass the shader source to the GPU
-        glShaderSource(fragmentID, fragmentShaderSrc);
-        glCompileShader(fragmentID);
-
-        // Check for errors in compilation
-        int success = glGetShaderi(fragmentID, GL_COMPILE_STATUS);
-        if (success == GL_FALSE) {
-            int len = glGetShaderi(fragmentID, GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: 'defaultShader.glsl'\n\tFragment shader compilation failed.");
-            System.out.println(glGetShaderInfoLog(fragmentID, len));
-            assert false : "";
-        }
-    }
-
-    //TODO - refactor to another class
-    private void linkShaders() {
-        // Link shaders and check for errors
-        shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexID);
-        glAttachShader(shaderProgram, fragmentID);
-        glLinkProgram(shaderProgram);
-
-        // Check for linking errors
-        int success = glGetProgrami(shaderProgram, GL_LINK_STATUS);
-
-        if (success == GL_FALSE) {
-            int len = glGetProgrami(shaderProgram, GL_INFO_LOG_LENGTH);
-            System.out.println("ERROR: 'defaultShader.glsl'\n\tLinking of shaders failed.");
-            System.out.println(glGetProgramInfoLog(shaderProgram, len));
-            assert false: "";
-        }
     }
 
     //TODO - refactor to another class
@@ -183,18 +155,21 @@ public class LevelEditorScene extends Scene {
         // Add the vertex attribute pointers
         int positionsSize = 3;
         int colorSize = 4;
-        int floatSizeBytes = 4;
-        int vertexSizeBytes = (positionsSize + colorSize) * floatSizeBytes;
+        int uvSize = 2;
+        int vertexSizeBytes = (positionsSize + colorSize + uvSize) * Float.BYTES;
 
         glVertexAttribPointer(0, positionsSize, GL_FLOAT, false, vertexSizeBytes, 0);
         glEnableVertexAttribArray(0);
 
-        glVertexAttribPointer(1,colorSize, GL_FLOAT, false, vertexSizeBytes, positionsSize * floatSizeBytes);
+        glVertexAttribPointer(1, colorSize, GL_FLOAT, false, vertexSizeBytes, positionsSize * Float.BYTES);
         glEnableVertexAttribArray(1);
+
+        glVertexAttribPointer(2, uvSize, GL_FLOAT, false, vertexSizeBytes, (positionsSize + colorSize) * Float.BYTES);
+        glEnableVertexAttribArray(2);
     }
 
-    private void showFps(float dt) {
-        System.out.println("" + (1.0f / dt) + "FPS");
+    private void showFps(double dt) {
+        System.out.println("" + (1.0f / dt) + " FPS");
     }
 
 }
