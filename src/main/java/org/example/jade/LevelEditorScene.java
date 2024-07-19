@@ -1,5 +1,6 @@
 package org.example.jade;
 
+import org.example.components.SpriteRenderer;
 import org.example.renderer.Shader;
 import org.example.renderer.Texture;
 import org.joml.Vector2f;
@@ -70,6 +71,8 @@ public class LevelEditorScene extends Scene {
     private int eboID;
 
     private Shader defaultShader;
+    private GameObject testObject;
+    private boolean firstTime;
 
 
     public LevelEditorScene() {
@@ -111,10 +114,28 @@ public class LevelEditorScene extends Scene {
 
         defaultShader.detach();
 
+
+        if (!firstTime) {
+            System.out.println("Creating game object.");
+            GameObject go = new GameObject("game test 2");
+            go.addComponent(new SpriteRenderer());
+            this.addGameObjectToScene(go);
+            firstTime = true;
+        }
+
+        for (GameObject go : this.gameObjects) {
+            go.update(dt);
+        }
+
     }
 
     @Override
     public void init() {
+        this.testObject = new GameObject("test object");
+        this.testObject.addComponent(new SpriteRenderer());
+        this.addGameObjectToScene(this.testObject);
+
+
         this.camera = new Camera(new Vector2f(0.0f, 0.0f));
         this.defaultShader = new Shader("assets/shaders/default.glsl");
 //        this.testTexture = new Texture("assets/images/mario_sprite.png");

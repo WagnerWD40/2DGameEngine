@@ -51,6 +51,7 @@ public class Window {
     public static void changeScene(Scene newScene) {
         currentScene = newScene;
         currentScene.init();
+        currentScene.start();
     }
 
     public static void changeWindowColor(float r, float g, float b) {
