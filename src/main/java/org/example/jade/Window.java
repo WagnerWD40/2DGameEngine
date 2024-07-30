@@ -25,7 +25,7 @@ public class Window {
     private float b;
     private float a;
 
-    public static Scene currentScene = null;
+    public Scene currentScene = null;
 
 
     private static Window window = null;
@@ -49,9 +49,9 @@ public class Window {
     }
 
     public static void changeScene(Scene newScene) {
-        currentScene = newScene;
-        currentScene.init();
-        currentScene.start();
+        get().currentScene = newScene;
+        get().currentScene.init();
+        get().currentScene.start();
     }
 
     public static void changeWindowColor(float r, float g, float b) {
@@ -60,19 +60,8 @@ public class Window {
         get().b = b;
     }
 
-    public static void changeWindowColor(float r, float g, float b, float a) {
-        get().r = r;
-        get().g = g;
-        get().b = b;
-        get().a = a;
-    }
-
-    public static void fadeWindow(float dt, float fadeValue) {
-        Window.changeWindowColor(
-                Window.get().r - dt * fadeValue,
-                Window.get().g - dt * fadeValue,
-                Window.get().b - dt * fadeValue
-        );
+    public static Scene getScene() {
+        return get().currentScene;
     }
 
     public void run() {

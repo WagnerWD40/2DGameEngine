@@ -113,6 +113,11 @@ public class Shader {
         return fragmentID;
     }
 
+    public void compile() {
+        compileVertex();
+        compileFragment();
+    }
+
     public void linkShaders(int vertexID, int fragmentID) {
         // Link shaders and check for errors
         shaderProgramID = glCreateProgram();

@@ -2,10 +2,15 @@ package org.example.components;
 
 import com.sun.security.jgss.GSSUtil;
 import org.example.jade.Component;
+import org.joml.Vector4f;
 
 public class SpriteRenderer extends Component {
 
-    private boolean firstTime = false;
+    private Vector4f color;
+
+    public SpriteRenderer(Vector4f color) {
+        this.color = color;
+    }
 
     @Override
     public void start() {
@@ -14,9 +19,10 @@ public class SpriteRenderer extends Component {
 
     @Override
     public void update(double dt) {
-        if (!firstTime) {
-            System.out.println(this.getClass().getName() + " is updating.");
-            this.firstTime = true;
-        }
+
+    }
+
+    public Vector4f getColor() {
+        return color;
     }
 }
