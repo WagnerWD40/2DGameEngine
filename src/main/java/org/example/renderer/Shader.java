@@ -191,4 +191,9 @@ public class Shader {
         use();
         glUniform1i(getUniLocation(varName), slot);
     }
+
+    public void uploadIntArray(String varName, int[] val) {
+        use();
+        glUniform1iv(getUniLocation(varName), val);
+    }
 }

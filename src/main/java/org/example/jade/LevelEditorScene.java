@@ -1,8 +1,11 @@
 package org.example.jade;
 
+import org.example.components.Sprite;
 import org.example.components.SpriteRenderer;
+import org.example.components.Spritesheet;
 import org.example.renderer.Shader;
 import org.example.renderer.Texture;
+import org.example.util.AssetPool;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 import org.lwjgl.BufferUtils;
@@ -36,8 +39,38 @@ public class LevelEditorScene extends Scene {
 
     @Override
     public void init() {
+        loadResources();
+
         this.camera = new Camera(new Vector2f());
 
+        Spritesheet sprites = AssetPool.getSpritesheet("assets/images/spritesheet.png");
+
+        //loadTestColors();
+        GameObject obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(64, 64)));
+        obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
+        this.gameObjects.add(obj1);
+
+        GameObject obj2 = new GameObject("Object 2", new Transform(new Vector2f(200, 100), new Vector2f(64, 64)));
+        obj2.addComponent(new SpriteRenderer(sprites.getSprite(1)));
+        this.gameObjects.add(obj2);
+
+        GameObject obj3 = new GameObject("Object 3", new Transform(new Vector2f(300, 100), new Vector2f(64, 64)));
+        obj3.addComponent(new SpriteRenderer(sprites.getSprite(2)));
+        this.gameObjects.add(obj3);
+
+        GameObject obj4 = new GameObject("Object 4", new Transform(new Vector2f(400, 100), new Vector2f(64, 64)));
+        obj4.addComponent(new SpriteRenderer(sprites.getSprite(10)));
+        this.gameObjects.add(obj4);
+
+    }
+
+    private void loadResources() {
+        AssetPool.getShader("assets/shaders/default.glsl");
+
+        AssetPool.addSpriteSheet("assets/images/spritesheet.png", 16, 16, 26, 0);
+    }
+
+    private void loadTestColors() {
         int xOffset = 10;
         int yOffset = 10;
 
@@ -56,7 +89,7 @@ public class LevelEditorScene extends Scene {
                 this.addGameObjectToScene(go);
 
             }
-            
+
         }
     }
 

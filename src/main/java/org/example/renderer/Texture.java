@@ -12,6 +12,8 @@ public class Texture {
 
     private String filepath;
     private int textureID;
+    private int width;
+    private int height;
 
     public Texture(String filepath) {
         this.filepath = filepath;
@@ -40,15 +42,17 @@ public class Texture {
             assert false: "Error: (Texture) Could not load image '" + filepath + "'";
         }
 
-        int imageType = channels.get(0) == 3 ? GL_RGB : channels.get(0) == 3 ? GL_RGBA : 0;
+
+        int imageType = channels.get(0) == 3 ? GL_RGB : channels.get(0) == 4 ? GL_RGBA : 0;
 
         if (imageType == 0 ) {
             assert false: "Error: (Texture) Unknown number of channels: '" + channels.get(0) + "'";
         }
 
-        //glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+        this.width = width.get(0);
+        this.height = height.get(0);
 
-        System.out.println(height.get(0));
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(
                 GL_TEXTURE_2D,
                 0,
@@ -70,5 +74,13 @@ public class Texture {
 
     public void unbind() {
         glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 }
