@@ -22,6 +22,8 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
 public class LevelEditorScene extends Scene {
 
+    private GameObject obj1;
+
     public LevelEditorScene() {
 //        System.out.println("Inside " + this.getClass().getName());
 
@@ -31,6 +33,7 @@ public class LevelEditorScene extends Scene {
     public void update(double dt) {
         showFps(dt);
         for (GameObject go : this.gameObjects) {
+            obj1.transform.position.x += (float) (10 * dt);
             go.update(dt);
         }
 
@@ -46,7 +49,7 @@ public class LevelEditorScene extends Scene {
         Spritesheet sprites = AssetPool.getSpritesheet("assets/images/spritesheet.png");
 
         //loadTestColors();
-        GameObject obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(64, 64)));
+        obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(64, 64)));
         obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
         this.gameObjects.add(obj1);
 

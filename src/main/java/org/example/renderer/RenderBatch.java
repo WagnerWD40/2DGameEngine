@@ -7,6 +7,7 @@ import org.joml.Vector2f;
 import org.joml.Vector4f;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL15.*;
@@ -95,9 +96,25 @@ public class RenderBatch {
     }
 
     public void render() {
-        // For now, we will rebuffer all data every frame
-        glBindBuffer(GL_ARRAY_BUFFER, vboID);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+
+        boolean rebufferData = false;
+
+        for (int i = 0; i < numSprites; i++) {
+            SpriteRenderer sprite = sprites[i];
+
+            if (sprite.isDirty()) {
+                System.out.println(sprite.toString());
+                loadVertexProperties(i);
+                sprite.setClean();
+                rebufferData = true;
+            }
+        }
+
+        if (rebufferData) {
+            // For now, we will rebuffer all data every frame
+            glBindBuffer(GL_ARRAY_BUFFER, vboID);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, vertices);
+        }
 
         // Use shader
         shader.use();
