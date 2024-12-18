@@ -11,6 +11,7 @@ public class GameObject implements Updatable {
     private List<Component> components;
 
     public Transform transform;
+    private int zIndex = 0;
 
     public GameObject(String name) {
         this.name = name;
@@ -22,6 +23,13 @@ public class GameObject implements Updatable {
         this.name = name;
         this.components = new ArrayList<>();
         this.transform = transform;
+    }
+
+    public GameObject(String name, Transform transform, int zIndex) {
+        this.name = name;
+        this.components = new ArrayList<>();
+        this.transform = transform;
+        this.zIndex = zIndex;
     }
 
     public <T extends Component> T getComponent(Class<T> componentClass) {
@@ -68,5 +76,9 @@ public class GameObject implements Updatable {
         for (int i = 0; i < components.size(); i++) {
             components.get(i).start();
         }
+    }
+
+    public int getZIndex() {
+        return zIndex;
     }
 }

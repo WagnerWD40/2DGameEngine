@@ -49,7 +49,7 @@ public class LevelEditorScene extends Scene {
         Spritesheet sprites = AssetPool.getSpritesheet("assets/images/spritesheet.png");
 
         //loadTestColors();
-        obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(64, 64)));
+        obj1 = new GameObject("Object 1", new Transform(new Vector2f(100, 100), new Vector2f(64, 64)), 4);
         obj1.addComponent(new SpriteRenderer(sprites.getSprite(0)));
         this.gameObjects.add(obj1);
 
@@ -57,7 +57,7 @@ public class LevelEditorScene extends Scene {
         obj2.addComponent(new SpriteRenderer(sprites.getSprite(1)));
         this.gameObjects.add(obj2);
 
-        GameObject obj3 = new GameObject("Object 3", new Transform(new Vector2f(300, 100), new Vector2f(64, 64)));
+        GameObject obj3 = new GameObject("Object 3", new Transform(new Vector2f(300, 100), new Vector2f(64, 64)), 10);
         obj3.addComponent(new SpriteRenderer(sprites.getSprite(2)));
         this.gameObjects.add(obj3);
 
