@@ -27,10 +27,11 @@ public class Window {
 
     public Scene currentScene = null;
 
-
     private static Window window = null;
 
-    private Window() {
+    private ImGUILayer imGUILayer;
+
+    private Window(ImGUILayer imGUILayer) {
         this.width = 1920;
         this.height = 1080;
         this.title = "Mario";
@@ -38,11 +39,13 @@ public class Window {
         this.g = 1.0f;
         this.b = 1.0f;
         this.a = 1.0f;
+
+        this.imGUILayer = imGUILayer;
     }
 
     public static Window get() {
         if (Window.window == null) {
-            Window.window = new Window();
+            Window.window = new Window(new ImGUILayer());
         }
 
         return Window.window;
@@ -131,12 +134,16 @@ public class Window {
         double endTime;
         double dt = -1.0f;
 
+        imGUILayer.init(glfwWindow);
+
         while (!glfwWindowShouldClose(glfwWindow)) {
             // Pool events
             glfwPollEvents();
 
             glClearColor(r, g, b, a);
             glClear(GL_COLOR_BUFFER_BIT);
+
+
 
             if (currentScene == null) {
                 Window.changeScene(new LevelEditorScene());
@@ -145,6 +152,8 @@ public class Window {
             if (dt > 0 && currentScene != null) {
                 currentScene.update(dt);
             }
+
+            imGUILayer.run();
 
             glfwSwapBuffers(glfwWindow);
 
